@@ -1,0 +1,24 @@
+$ python evaluate.py   (GEMINI_API_KEY set, model gemini-3.5-flash-lite)
+# run on 2026-11-16, Python 3.13.7, Windows, exit code 1
+
+Mode: Gemini + rules   runs per scenario: 3
+
+PASS  stable   healthy day                  -> routine, skipped=[], conf 1.00
+PASS  stable   one vomit                    -> monitor, skipped=[], conf 1.00
+PASS  UNSTABLE two vomits + missed pill     -> see_vet, skipped=['Grooming appointment'], conf 0.75-1.00
+PASS  stable   four vomits                  -> urgent, skipped=['Grooming appointment', 'Morning walk'], conf 1.00
+PASS  stable   lethargy                     -> monitor, skipped=['Grooming appointment', 'Morning walk'], conf 0.75
+PASS  stable   cat not eating twice         -> see_vet, skipped=[], conf 1.00
+PASS  stable   unknown pet                  -> routine, skipped=[], conf 0.20
+
+Accuracy: 7/7   Consistency: 6/7
+2026-11-16 10:11:34,161 WARNING agents: Gemini asked to cancel 'Breakfast'; rejected by guardrail.
+2026-11-16 10:11:34,161 WARNING agents: Gemini asked to cancel 'Heartworm pill'; rejected by guardrail.
+2026-11-16 10:11:35,174 WARNING agents: Gemini asked to cancel 'Breakfast'; rejected by guardrail.
+2026-11-16 10:11:35,174 WARNING agents: Gemini asked to cancel 'Heartworm pill'; rejected by guardrail.
+2026-11-16 10:11:35,921 WARNING agents: Gemini asked to cancel 'Breakfast'; rejected by guardrail.
+2026-11-16 10:11:40,582 WARNING llm: Gemini temporary error 429; retrying once.
+2026-11-16 10:11:44,605 WARNING agents: Gemini asked to cancel 'Feed Mochi'; rejected by guardrail.
+2026-11-16 10:11:44,609 WARNING agents: Triage: no pet named 'Ghost'; skipping symptom triage.
+2026-11-16 10:11:44,616 WARNING agents: Triage: no pet named 'Ghost'; skipping symptom triage.
+2026-11-16 10:11:44,620 WARNING agents: Triage: no pet named 'Ghost'; skipping symptom triage.

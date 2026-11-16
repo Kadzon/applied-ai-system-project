@@ -1,0 +1,17 @@
+$ python evaluate.py --offline
+# run on 2026-11-16, Python 3.13.7, Windows, exit code 0
+
+Mode: offline rules   runs per scenario: 3
+
+PASS  stable   healthy day                  -> routine, skipped=[], conf 1.00
+PASS  stable   one vomit                    -> monitor, skipped=[], conf 0.95
+PASS  stable   two vomits + missed pill     -> see_vet, skipped=['Grooming appointment'], conf 0.95
+PASS  stable   four vomits                  -> urgent, skipped=['Grooming appointment', 'Morning walk'], conf 0.95
+PASS  stable   lethargy                     -> monitor, skipped=['Grooming appointment'], conf 0.95
+PASS  stable   cat not eating twice         -> see_vet, skipped=[], conf 0.95
+PASS  stable   unknown pet                  -> routine, skipped=[], conf 0.20
+
+Accuracy: 7/7   Consistency: 7/7
+2026-11-16 10:11:25,854 WARNING agents: Triage: no pet named 'Ghost'; skipping symptom triage.
+2026-11-16 10:11:25,855 WARNING agents: Triage: no pet named 'Ghost'; skipping symptom triage.
+2026-11-16 10:11:25,856 WARNING agents: Triage: no pet named 'Ghost'; skipping symptom triage.

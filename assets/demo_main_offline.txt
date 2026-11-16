@@ -1,0 +1,32 @@
+$ python main.py --offline
+# run on 2026-11-16, Python 3.13.7, Windows, exit code 0
+
+AI mode: offline rules
+
+=== Plan WITHOUT the AI agents ===
+  08:00-08:05  Rex: Heartworm pill  (high priority, fit within remaining time)
+  08:05-08:15  Rex: Breakfast  (high priority, fit within remaining time)
+  08:15-08:25  Mochi: Feed Mochi  (high priority, fit within remaining time)
+  08:25-08:55  Rex: Morning walk  (medium priority, fit within remaining time)
+  08:55-09:10  Mochi: Play session  (low priority, fit within remaining time)
+  14:00-15:00  Rex: Grooming appointment  (medium priority, fit within remaining time)
+
+=== Plan WITH the AI agents ===
+  08:00-08:10  Rex: Breakfast  (high priority, fit within remaining time)
+  08:10-08:20  Mochi: Feed Mochi  (high priority, fit within remaining time)
+  08:20-08:50  Rex: Morning walk  (medium priority, fit within remaining time)
+  08:50-09:05  Mochi: Play session  (low priority, fit within remaining time)
+  10:45-10:50  Rex: Heartworm pill  (rescheduled by the AI schedule optimizer)
+  SKIPPED  Rex: Grooming appointment  (Postponed: Rex is unwell (see vet))
+
+=== Alerts ===
+  [WARNING] Contact the vet about Rex's vomiting (2x).
+  [WARNING] Cancel/postpone 'Grooming appointment' for Rex: Postponed: Rex is unwell (see vet)
+  [INFO] Give Rex's heartworm pill at 10:45 - ONE dose only, do not double up.
+
+Severity: see_vet   Knowledge used: med-heartworm, sym-vomiting
+Safety check issues: none
+Confidence: 0.95 (high)
+  - Every symptom matched a guideline exactly.
+  - Missed-dose policy found for every reported medication.
+  - Gemini was off; the safety rules alone were used.

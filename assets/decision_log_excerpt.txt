@@ -1,0 +1,15 @@
+# Excerpt of logs/pawpal_ai.log (trimmed; API key never appears in the log)
+# Part 1: real Gemini API failures hit during development, one example per error type
+
+2026-11-16 09:27:00,947 WARNING llm: Gemini call failed (ClientError: 401 UNAUTHENTICATED. {...error details trimmed...}
+2026-11-16 09:37:15,544 WARNING llm: Gemini call failed (ClientError: 404 NOT_FOUND. {...error details trimmed...}
+2026-11-16 09:42:51,181 WARNING llm: Gemini call failed (ClientError: 429 RESOURCE_EXHAUSTED. {...error details trimmed...}
+
+# Part 2: one full workflow run (Rex vomited twice, missed heartworm pill)
+
+2026-11-16 10:11:45,160 INFO    workflow: Workflow start: owner=Jordan date=2026-11-16 report=<Rex: vomiting x2, missed heartworm pill>
+2026-11-16 10:11:45,161 INFO    agents: Triage rule: vomiting x2 -> see_vet (sym-vomiting)
+2026-11-16 10:11:47,903 INFO    agents: Gemini vs rules: differs (rules=see_vet, gemini=see_vet)
+2026-11-16 10:11:47,904 INFO    agents: Optimizer: heartworm pill 2.5h late -> give at 10:45 (med-heartworm)
+2026-11-16 10:11:47,904 INFO    workflow: Confidence: 0.75 (medium) - Every symptom matched a guideline exactly.; Missed-dose policy found for every reported medication.; Gemini differed from the safety rules; the stricter result was used (-0.20).
+2026-11-16 10:11:47,904 INFO    workflow: Workflow done: severity=see_vet scheduled=4 skipped=2 issues=0

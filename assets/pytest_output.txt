@@ -1,0 +1,44 @@
+$ python -m pytest -v
+# run on 2026-11-16, Python 3.13.7, Windows, exit code 0
+
+============================= test session starts =============================
+platform win32 -- Python 3.13.7, pytest-9.2.0, pluggy-1.7.0 -- <project>\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: <project>
+plugins: anyio-4.16.0
+collecting ... collected 32 items
+
+tests/test_ai_system.py::test_retrieval_finds_relevant_entry PASSED      [  3%]
+tests/test_ai_system.py::test_retrieval_respects_species_filter PASSED   [  6%]
+tests/test_ai_system.py::test_retrieval_returns_nothing_for_unrelated_query PASSED [  9%]
+tests/test_ai_system.py::test_one_vomit_does_not_cancel_grooming PASSED  [ 12%]
+tests/test_ai_system.py::test_two_vomits_cancel_grooming_and_alert_vet PASSED [ 15%]
+tests/test_ai_system.py::test_four_vomits_is_urgent_and_cancels_walk PASSED [ 18%]
+tests/test_ai_system.py::test_feeding_and_medication_are_never_cancelled_by_triage PASSED [ 21%]
+tests/test_ai_system.py::test_missed_pill_is_rescheduled_not_doubled PASSED [ 25%]
+tests/test_ai_system.py::test_pill_too_late_is_cancelled_with_vet_alert PASSED [ 28%]
+tests/test_ai_system.py::test_unknown_medication_makes_no_change_and_asks_vet PASSED [ 31%]
+tests/test_ai_system.py::test_missed_dose_with_no_matching_task_adds_one_dose PASSED [ 34%]
+tests/test_ai_system.py::test_toxic_treat_task_is_removed PASSED         [ 37%]
+tests/test_ai_system.py::test_llm_can_add_valid_cancellation_and_rationale PASSED [ 40%]
+tests/test_ai_system.py::test_llm_cannot_lower_severity PASSED           [ 43%]
+tests/test_ai_system.py::test_llm_cannot_cancel_medication_or_invent_tasks PASSED [ 46%]
+tests/test_ai_system.py::test_invalid_llm_answer_falls_back_to_rules[bad0] PASSED [ 50%]
+tests/test_ai_system.py::test_invalid_llm_answer_falls_back_to_rules[bad1] PASSED [ 53%]
+tests/test_ai_system.py::test_invalid_llm_answer_falls_back_to_rules[bad2] PASSED [ 56%]
+tests/test_ai_system.py::test_invalid_llm_answer_falls_back_to_rules[None] PASSED [ 59%]
+tests/test_ai_system.py::test_verify_plan_catches_double_dose PASSED     [ 62%]
+tests/test_ai_system.py::test_unknown_pet_is_reported_not_crashed PASSED [ 65%]
+tests/test_ai_system.py::test_agent_crash_returns_baseline_plan_with_warning PASSED [ 68%]
+tests/test_ai_system.py::test_severity_scale_is_ordered PASSED           [ 71%]
+tests/test_confidence.py::test_clean_match_offline_is_high PASSED        [ 75%]
+tests/test_confidence.py::test_unknown_symptom_lowers_confidence PASSED  [ 78%]
+tests/test_confidence.py::test_unknown_symptom_and_medication_is_low_and_warns_owner PASSED [ 81%]
+tests/test_confidence.py::test_unknown_pet_is_low PASSED                 [ 84%]
+tests/test_confidence.py::test_gemini_agreeing_raises_confidence PASSED  [ 87%]
+tests/test_confidence.py::test_gemini_differing_lowers_confidence PASSED [ 90%]
+tests/test_confidence.py::test_invalid_gemini_answer_lowers_confidence PASSED [ 93%]
+tests/test_confidence.py::test_failed_safety_check_lowers_confidence PASSED [ 96%]
+tests/test_confidence.py::test_score_always_between_zero_and_one PASSED  [100%]
+
+============================= 32 passed in 0.13s ==============================
