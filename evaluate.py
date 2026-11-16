@@ -49,8 +49,11 @@ def main() -> None:
 
     correct = consistent = 0
     for name, report, exp_sev, exp_skipped in SCENARIOS:
-        outcomes = [outcome(run_care_workflow(build_sample_owner(), report, TODAY, NOW, 180, kb=kb, llm=llm))
-                    for _ in range(runs)]
+        results = [run_care_workflow(build_sample_owner(), report, TODAY, NOW, 180, kb=kb, llm=llm)
+                   for _ in range(runs)]
+        outcomes = [outcome(r) for r in results]
+        scores = [r.confidence.score for r in results]
+        conf_text = f"conf {min(scores):.2f}" if min(scores) == max(scores) else f"conf {min(scores):.2f}-{max(scores):.2f}"
         is_consistent = len(set(outcomes)) == 1
         sev, skipped = outcomes[0]
         # Gemini may only add cancellations, so expected tasks must be a subset; severity must be >= expected.
@@ -62,7 +65,7 @@ def main() -> None:
         correct += is_correct
         consistent += is_consistent
         print(f"{'PASS' if is_correct else 'FAIL'}  {'stable' if is_consistent else 'UNSTABLE':8} {name:28} "
-              f"-> {sev}, skipped={sorted(skipped)}")
+              f"-> {sev}, skipped={sorted(skipped)}, {conf_text}")
 
     total = len(SCENARIOS)
     print(f"\nAccuracy: {correct}/{total}   Consistency: {consistent}/{total}")

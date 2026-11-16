@@ -10,6 +10,7 @@ from dataclasses import dataclass, field
 from datetime import date, datetime
 
 from agents import NotificationAgent, OptimizerResult, ScheduleOptimizerAgent, TriageAgent, TriageResult
+from confidence import Confidence, label_for, score_confidence
 from models import HealthReport, Owner
 from retriever import KnowledgeBase
 from scheduler import Adjustments, Alert, Plan, Scheduler
@@ -24,6 +25,7 @@ class WorkflowResult:
     triage: TriageResult
     optimizer: OptimizerResult
     issues: list[str] = field(default_factory=list)  # problems the verify step caught
+    confidence: Confidence = field(default_factory=lambda: Confidence(0.0, "low", ["AI did not run."]))
 
     @property
     def sources(self) -> list[str]:
@@ -82,6 +84,15 @@ def run_care_workflow(
     for issue in issues:
         log.error("Plan verification failed: %s", issue)
         plan.alerts.append(Alert("warning", f"Check needed: {issue}"))
+    confidence = score_confidence(report, triage, optimizer)
+    if issues:  # a failed safety check always lowers trust
+        confidence.score = round(max(0.0, confidence.score - 0.30), 2)
+        confidence.label = label_for(confidence.score)
+        confidence.reasons.append("The plan's own safety check found a problem (-0.30).")
+    if confidence.label == "low":
+        plan.alerts.append(Alert("warning", f"I'm not confident about this advice ({confidence.score:.2f}). "
+                                            "Please check with your vet."))
+    log.info("Confidence: %.2f (%s) - %s", confidence.score, confidence.label, "; ".join(confidence.reasons))
     log.info("Workflow done: severity=%s scheduled=%d skipped=%d issues=%d",
              triage.severity, len(plan.scheduled), len(plan.skipped), len(issues))
-    return WorkflowResult(baseline, plan, triage, optimizer, issues)
+    return WorkflowResult(baseline, plan, triage, optimizer, issues, confidence)

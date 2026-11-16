@@ -38,6 +38,10 @@ class TriageResult:
     rationale: str = ""
     sources: list[str] = field(default_factory=list)  # knowledge-base ids that drove the decision
     used_llm: bool = False
+    # Evidence for the confidence score (see confidence.py):
+    symptom_match: dict[str, str] = field(default_factory=dict)  # symptom -> "exact" | "keyword" | "none"
+    llm_status: str = "off"  # off | unavailable | invalid | agreed | differs
+    unknown_pet: bool = False
 
 
 class TriageAgent:
@@ -53,6 +57,7 @@ class TriageAgent:
         pet = owner.find_pet(report.pet_name)
         if pet is None:
             log.warning("Triage: no pet named %r; skipping symptom triage.", report.pet_name)
+            result.unknown_pet = True
             result.alerts.append(Alert("warning", f"Health report names unknown pet '{report.pet_name}'."))
             return result
 
@@ -61,11 +66,13 @@ class TriageAgent:
         for symptom, count in report.symptoms.items():
             docs = self.kb.retrieve(symptom.replace("_", " "), species=pet.species, topic_prefix="symptom", k=1)
             if not docs:
+                result.symptom_match[symptom] = "none"
                 log.warning("Triage: no guideline found for symptom %r; advising a vet call.", symptom)
                 result.severity = _worse(result.severity, "see_vet")
                 result.alerts.append(Alert("warning", f"No guidance for '{symptom}'. Contact your vet."))
                 continue
             doc = docs[0]
+            result.symptom_match[symptom] = "exact" if doc.get("symptom") == symptom else "keyword"
             result.sources.append(doc["id"])
             level = "routine"
             if count >= doc["urgent_at"]:
@@ -123,8 +130,10 @@ class TriageAgent:
             '"cancel_titles": [exact task titles to postpone for the pet\'s wellbeing], '
             '"rationale": "one or two sentences for the owner"}'
         )
+        rules_severity, rules_cancelled = result.severity, set(result.cancelled)
         answer = self.llm.generate_json(prompt)
         if answer is None:
+            result.llm_status = "unavailable"
             return
         # Guardrail: validate everything Gemini says before it can change the plan.
         severity = answer.get("severity")
@@ -132,6 +141,7 @@ class TriageAgent:
         titles = answer.get("cancel_titles", [])
         if severity not in SEVERITIES or not isinstance(rationale, str) or not isinstance(titles, list):
             log.warning("Gemini triage answer failed validation; ignored: %r", answer)
+            result.llm_status = "invalid"
             return
         result.used_llm = True
         result.rationale = rationale.strip()[:500]
@@ -145,6 +155,9 @@ class TriageAgent:
             if id(task) not in result.cancelled:
                 result.cancelled[id(task)] = f"Postponed on AI advice: {pet.name} is unwell"
                 result.cancelled_titles.append(title)
+        agrees = severity == rules_severity and set(result.cancelled) == rules_cancelled
+        result.llm_status = "agreed" if agrees else "differs"
+        log.info("Gemini vs rules: %s (rules=%s, gemini=%s)", result.llm_status, rules_severity, severity)
 
 
 # ---------------------------------------------------------------- Agent 2: Schedule optimizer
@@ -155,6 +168,8 @@ class OptimizerResult:
     added: list[tuple[Pet, Task]] = field(default_factory=list)
     alerts: list[Alert] = field(default_factory=list)
     sources: list[str] = field(default_factory=list)
+    policies_found: int = 0  # missed doses we had a policy for (evidence for confidence)
+    policies_missing: int = 0
 
 
 class ScheduleOptimizerAgent:
@@ -177,11 +192,13 @@ class ScheduleOptimizerAgent:
         for missed in report.missed_doses:
             docs = self.kb.retrieve(missed.medication, species=pet.species, topic_prefix="medication", k=1)
             if not docs:
+                result.policies_missing += 1
                 log.warning("Optimizer: no policy for %r; leaving schedule alone.", missed.medication)
                 result.alerts.append(Alert("warning",
                     f"No missed-dose guidance for '{missed.medication}'. Ask your vet before giving it."))
                 continue
             doc = docs[0]
+            result.policies_found += 1
             result.sources.append(doc["id"])
             hours_late = (now - missed.scheduled_at).total_seconds() / 3600
             task = self._find_task(pet, doc["medication"], missed.medication)

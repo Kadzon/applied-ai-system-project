@@ -63,6 +63,10 @@ def main() -> None:
         print(f"  [{alert.level.upper()}] {alert.message}")
     print(f"\nSeverity: {result.triage.severity}   Knowledge used: {', '.join(result.sources) or 'none'}")
     print(f"Safety check issues: {result.issues or 'none'}")
+    conf = result.confidence
+    print(f"Confidence: {conf.score:.2f} ({conf.label})")
+    for reason in conf.reasons:
+        print(f"  - {reason}")
 
 
 if __name__ == "__main__":
