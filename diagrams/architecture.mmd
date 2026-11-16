@@ -24,6 +24,7 @@ flowchart TD
         EVAL{"Evaluator: verify_plan<br/>cancelled task still scheduled?<br/>double dose? medication dropped?"}
         A1 --> A2 --> A3 --> SCH --> EVAL
         EVAL -- "problem found" --> WARN["Add warning alert<br/>to the plan"]
+        EVAL --> CONF["Confidence scorer<br/>confidence.py<br/>score 0-1 + reasons"]
     end
 
     LLM(["Gemini API - optional"])
@@ -33,6 +34,7 @@ flowchart TD
     subgraph OUTPUT["3. OUTPUT"]
         PLAN["Final daily plan<br/>scheduled and skipped tasks"]
         ALERTS["Alerts<br/>for example: Cancel grooming,<br/>contact vet, give pill once at 10:45"]
+        CONFOUT["How sure am I?<br/>high, medium or low + reasons<br/>low = check with your vet"]
         BASE["Baseline plan without AI<br/>for comparison"]
     end
 
@@ -63,6 +65,10 @@ flowchart TD
     EVAL -- "plan is safe" --> PLAN
     WARN --> PLAN
     A3 --> ALERTS
+    CONF --> CONFOUT
+    CONFOUT --> H1
+    A1 -. "evidence: guideline match,<br/>Gemini agreed or differed" .-> CONF
+    A2 -. "evidence: policy found" .-> CONF
     PLAN --> H1
     ALERTS --> H1
     BASE --> H1
@@ -89,6 +95,6 @@ flowchart TD
     classDef test fill:#dcfce7,stroke:#16a34a,color:#222;
     classDef store fill:#f3f4f6,stroke:#6b7280,color:#222;
     class OWNER,H1,H2,H3,H4 human;
-    class A1,A2,A3,LLM,GUARD ai;
+    class A1,A2,A3,LLM,GUARD,CONF ai;
     class PYT,EVS,EVAL test;
     class KB,LOG store;
