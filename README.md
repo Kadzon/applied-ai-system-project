@@ -109,6 +109,10 @@ SKIPPED Heartworm pill (Too late to give safely; contact the vet first)
 [WARNING] Rex's heartworm pill is 98h late (limit 72h). Do NOT give it; contact the vet.
 ```
 
+### Reproducible evidence
+
+The outputs above are also saved as real command output in [`assets/`](assets/README.md): the pytest run (32 passing), the evaluation report offline and with Gemini, both demo runs, and a log excerpt showing real API failures and one full decision trace. The offline commands are repeatable, and `assets/README.md` lists every command.
+
 ## Design Decisions
 
 | Decision | Why | Trade-off |
