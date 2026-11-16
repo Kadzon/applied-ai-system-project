@@ -14,7 +14,7 @@ This project extends **PawPal+**, my Module 2 Streamlit scheduler. PawPal+ let a
 
 The full diagram is in [`diagrams/architecture.mmd`](diagrams/architecture.mmd). Data flows in three stages:
 
-1. **Input.** The owner supplies pets and tasks (`models.py`) and a `HealthReport` of symptoms, missed doses and notes.
+1. **Input.** In the web app (`app.py`) the owner adds pets and tasks (`models.py`) and fills in a daily check-in form, which becomes a `HealthReport` of symptoms, missed doses and notes.
 2. **Process** (`workflow.py`):
    - **Retriever** (`retriever.py`) searches `knowledge_base/*.json` for symptom thresholds, missed-dose policies and toxic foods. This is the RAG step.
    - **Agent 1, Triage:** counts symptoms against the retrieved guideline, sets a severity (routine, monitor, see_vet, urgent), and cancels stressful or toxic tasks.
@@ -22,6 +22,7 @@ The full diagram is in [`diagrams/architecture.mmd`](diagrams/architecture.mmd).
    - **Agent 3, Notification:** merges both decisions into one `Adjustments` object plus owner-facing alerts.
    - **Scheduler** (`scheduler.py`) applies the adjustments and builds the plan.
    - **Evaluator** (`verify_plan`) checks the finished plan. It looks for cancelled tasks still scheduled, double doses, and medication dropped for lack of time. Problems become warning alerts.
+   - **Confidence scorer** (`confidence.py`) rates how sure the system is (0 to 1) from evidence: did a guideline match, did Gemini agree with the rules, did the safety check pass. A low score tells the owner to check with a vet.
    - **Gemini** (`llm.py`, optional) gives Triage a second opinion, but only through guardrails (see Design Decisions).
 3. **Output.** The final plan, the alerts, and a baseline plan without the AI, so the owner can see exactly what changed.
 
@@ -40,10 +41,11 @@ Requires Python 3.10 or newer.
    - Windows: `python -m venv .venv` then `.venv\Scripts\activate`
    - macOS/Linux: `python -m venv .venv` then `source .venv/bin/activate`
 3. Install dependencies: `pip install -r requirements.txt`
-4. *(Optional)* Enable Gemini. Copy `.env.example` to `.env` and set `GEMINI_API_KEY=` to a key from https://aistudio.google.com/apikey. The default model is `gemini-2.5-flash`, and you can change it with `GEMINI_MODEL` in `.env`. **Skip this step to run fully offline.**
-5. Run the demo: `python main.py` (add `--offline` to force offline rules).
-6. Run the tests: `python -m pytest`
-7. Run the reliability check: `python evaluate.py --offline` (add `--runs 5` for more repeats).
+4. *(Optional)* Enable Gemini. Copy `.env.example` to `.env` and set `GEMINI_API_KEY=` to a key from https://aistudio.google.com/apikey. The default model is `gemini-3.5-flash-lite`, and you can change it with `GEMINI_MODEL` in `.env`. **Skip this step to run fully offline.**
+5. **Launch the app:** `streamlit run app.py`. It opens in your browser at http://localhost:8501. Click **Load sample pets** in the sidebar to try it, or add your own pets and tasks.
+6. *(Optional)* Command-line demo: `python main.py` (add `--offline` to force offline rules).
+7. Run the tests: `python -m pytest`
+8. Run the reliability check: `python evaluate.py --offline` (add `--runs 5` for more repeats).
 
 All decisions are logged to `logs/pawpal_ai.log`, which is created on first run.
 
@@ -123,13 +125,14 @@ SKIPPED Heartworm pill (Too late to give safely; contact the vet first)
 ## Testing Summary
 
 **What worked**
-- `python -m pytest` runs 23 offline tests, all passing. They cover retrieval and species filtering, each severity threshold, the "never cancel feeding or medication" rule, no double dosing, the too-late-pill path, toxic-food removal, and the verify step catching a deliberately created double dose.
+- `python -m pytest` runs 32 offline tests, all passing. They cover retrieval and species filtering, each severity threshold, the "never cancel feeding or medication" rule, no double dosing, the too-late-pill path, toxic-food removal, and the verify step catching a deliberately created double dose.
 - Gemini's guardrails are tested with a fake client. It returns an invalid severity, wrong types, a missing field, `None`, an attempt to cancel medication, and an attempt to lower severity. In every case the rules win.
 - A test forces an agent to crash and confirms the user still gets the normal plan plus a warning.
 - `python evaluate.py --offline` runs 7 labelled scenarios 3 times each. The result is **7/7 correct and 7/7 consistent** (identical output every run).
 
 **What didn't, or isn't covered**
-- **Gemini has not been tested live.** The Gemini path (`llm.py`) is only exercised through a fake client. Real calls may need prompt tuning. Any real failure falls back to the rules by design.
+- **Gemini live results (`gemini-3.5-flash-lite`):** `python evaluate.py` scored **7/7 correct but only 6/7 consistent**. In "two vomits + missed pill", Gemini sometimes also postponed the morning walk and sometimes didn't, so repeated runs differed. The guardrails behaved as designed: severity never dropped below the rules, and medication and feeding were never cancelled. The offline rules stay 7/7 consistent, which is why they remain the safety floor.
+- **Model availability is not guaranteed.** `gemini-2.5-flash` returned 404 (retired for new users), and `gemini-3.7-flash` and `gemini-3.8-flash` returned 503/504 under load. The client retries once on temporary errors and then falls back to the offline rules, so the app kept working throughout.
 - Retrieval only matches the words in the keyword lists, so it won't recognise unlisted phrasing or misspellings.
 - The evaluation scenarios were written by me, using the same rules that produce the answers. They show consistency and regression safety, but they are not independent proof of medical accuracy.
 - Medication matching is by name. It also doesn't yet handle multi-dose-per-day medications or interactions between symptoms and medications (for example, vomiting after an NSAID).
@@ -147,7 +150,9 @@ scheduler.py     builds the daily plan and applies Adjustments
 retriever.py     knowledge-base search (RAG)
 agents.py        Triage, Schedule Optimizer, Notification
 workflow.py      the agent loop and verify_plan
+confidence.py    confidence score with reasons
 llm.py           Gemini client with safe fallback
+app.py           Streamlit web app (the end-user interface)
 app_logging.py   logging setup
 main.py          demo scenario
 evaluate.py      reliability and consistency check
@@ -156,4 +161,4 @@ tests/           pytest suite
 diagrams/        architecture.mmd
 ```
 
-*Not veterinary advice. Always contact a vet when in doubt. The Streamlit UI from PawPal+ is not yet connected to this version.*
+*Not veterinary advice. Always contact a vet when in doubt.*
