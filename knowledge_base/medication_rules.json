@@ -1,0 +1,42 @@
+[
+  {
+    "id": "med-heartworm",
+    "topic": "medication missed-dose policy",
+    "species": ["dog", "cat"],
+    "keywords": ["heartworm", "heartgard", "preventive", "pill", "chewable"],
+    "medication": "heartworm",
+    "give_now_within_hours": 72,
+    "never_double": true,
+    "text": "Monthly heartworm preventive: if a dose is missed, give it as soon as you remember, as long as it is within about 3 days of the due date. Never give two doses to catch up. If it is later than that, contact the vet before dosing, since the pet may need a heartworm test."
+  },
+  {
+    "id": "med-flea-tick",
+    "topic": "medication missed-dose policy",
+    "species": ["dog", "cat"],
+    "keywords": ["flea", "tick", "nexgard", "bravecto", "frontline", "preventive"],
+    "medication": "flea",
+    "give_now_within_hours": 168,
+    "never_double": true,
+    "text": "Flea and tick preventive: if a dose is missed, apply or give it when remembered, within about a week of the due date. Do not double up. If later than a week, ask the vet."
+  },
+  {
+    "id": "med-antibiotic",
+    "topic": "medication missed-dose policy",
+    "species": ["dog", "cat"],
+    "keywords": ["antibiotic", "amoxicillin", "clavamox", "twice", "daily", "course"],
+    "medication": "antibiotic",
+    "give_now_within_hours": 4,
+    "never_double": true,
+    "text": "Antibiotics given once or twice a day: if a dose is missed, give it when remembered only if it is within about 4 hours of the due time. Otherwise skip it and resume the normal schedule. Never double a dose. Finish the whole course."
+  },
+  {
+    "id": "med-pain",
+    "topic": "medication missed-dose policy",
+    "species": ["dog", "cat"],
+    "keywords": ["pain", "meloxicam", "carprofen", "rimadyl", "nsaid", "arthritis"],
+    "medication": "pain",
+    "give_now_within_hours": 6,
+    "never_double": true,
+    "text": "Pain and anti-inflammatory medication (NSAIDs): if a dose is missed, give it when remembered only if it is within about 6 hours of the due time. Otherwise skip it and wait for the next scheduled dose. Never double a dose. NSAIDs can upset the stomach, so call the vet if the pet is vomiting."
+  }
+]

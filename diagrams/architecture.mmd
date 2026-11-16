@@ -1,0 +1,94 @@
+flowchart TD
+    %% ---------- INPUT ----------
+    subgraph INPUT["1. INPUT"]
+        OWNER(["Human: pet owner"])
+        TASKS["Pets and daily tasks<br/>models.py"]
+        REPORT["Health report<br/>symptoms, missed doses, notes"]
+        OWNER --> TASKS
+        OWNER --> REPORT
+    end
+
+    %% ---------- KNOWLEDGE / RAG ----------
+    subgraph RAG["Knowledge and retrieval - RAG"]
+        KB[("knowledge_base/*.json<br/>symptoms, medications,<br/>toxic foods, breed care")]
+        RET["Retriever<br/>retriever.py<br/>keyword + overlap scoring"]
+        KB --> RET
+    end
+
+    %% ---------- PROCESS ----------
+    subgraph PROCESS["2. PROCESS - agentic loop, workflow.py"]
+        A1["Agent 1: Triage<br/>severity, cancel stressful or toxic tasks"]
+        A2["Agent 2: Schedule Optimizer<br/>missed-dose policy, no double dose"]
+        A3["Agent 3: Notification<br/>merge decisions into Adjustments + alerts"]
+        SCH["Scheduler<br/>scheduler.py<br/>applies Adjustments, builds plan"]
+        EVAL{"Evaluator: verify_plan<br/>cancelled task still scheduled?<br/>double dose? medication dropped?"}
+        A1 --> A2 --> A3 --> SCH --> EVAL
+        EVAL -- "problem found" --> WARN["Add warning alert<br/>to the plan"]
+    end
+
+    LLM(["Gemini API - optional"])
+    GUARD["Guardrails<br/>validate JSON, rules set the floor,<br/>cannot cancel meds or feeding,<br/>timeout falls back to offline rules"]
+
+    %% ---------- OUTPUT ----------
+    subgraph OUTPUT["3. OUTPUT"]
+        PLAN["Final daily plan<br/>scheduled and skipped tasks"]
+        ALERTS["Alerts<br/>for example: Cancel grooming,<br/>contact vet, give pill once at 10:45"]
+        BASE["Baseline plan without AI<br/>for comparison"]
+    end
+
+    %% ---------- HUMAN CHECKPOINTS ----------
+    subgraph HUMAN["Human checkpoints"]
+        H1(["Owner reviews the plan and alerts<br/>and decides whether to follow them"])
+        H2(["Vet makes the real medical decision<br/>for see_vet and urgent cases"])
+        H3(["Developer reads logs/pawpal_ai.log<br/>and audits agent decisions"])
+        H4(["Developer or vet curates<br/>knowledge base entries"])
+    end
+
+    %% ---------- TESTING ----------
+    subgraph TEST["Automated testing"]
+        PYT["pytest suite - 23 tests<br/>retrieval, agents, guardrails,<br/>fake Gemini, crash handling"]
+        EVS["evaluate.py<br/>labelled scenarios run repeatedly:<br/>accuracy and consistency"]
+    end
+
+    LOG[["logs/pawpal_ai.log"]]
+
+    %% ---------- DATA FLOW ----------
+    TASKS --> A1
+    REPORT --> A1
+    REPORT --> A2
+    RET -- "retrieved guidance" --> A1
+    RET -- "retrieved policy" --> A2
+    A1 <-. "prompt and validated answer" .-> GUARD
+    GUARD <-.-> LLM
+    EVAL -- "plan is safe" --> PLAN
+    WARN --> PLAN
+    A3 --> ALERTS
+    PLAN --> H1
+    ALERTS --> H1
+    BASE --> H1
+    SCH -. "same tasks, no adjustments" .-> BASE
+    H1 -- "urgent or see_vet" --> H2
+    H1 -. "feedback" .-> OWNER
+
+    %% ---------- LOGGING ----------
+    A1 -. "log" .-> LOG
+    A2 -. "log" .-> LOG
+    EVAL -. "log" .-> LOG
+    LOG --> H3
+    H3 -. "fix rules or thresholds" .-> H4
+    H4 --> KB
+
+    %% ---------- TESTING LINKS ----------
+    PYT -. "tests" .-> PROCESS
+    PYT -. "tests" .-> RET
+    EVS -. "scores" .-> PROCESS
+    EVS --> H3
+
+    classDef human fill:#fde8c8,stroke:#c77700,color:#222;
+    classDef ai fill:#dbeafe,stroke:#2563eb,color:#222;
+    classDef test fill:#dcfce7,stroke:#16a34a,color:#222;
+    classDef store fill:#f3f4f6,stroke:#6b7280,color:#222;
+    class OWNER,H1,H2,H3,H4 human;
+    class A1,A2,A3,LLM,GUARD ai;
+    class PYT,EVS,EVAL test;
+    class KB,LOG store;

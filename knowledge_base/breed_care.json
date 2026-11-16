@@ -1,0 +1,40 @@
+[
+  {
+    "id": "breed-golden-retriever",
+    "topic": "breed care",
+    "species": ["dog"],
+    "keywords": ["golden", "retriever", "grooming", "brushing", "shedding"],
+    "breed": "golden retriever",
+    "text": "Golden retrievers shed heavily. Brush 2 to 3 times a week for 10 to 15 minutes, daily in shedding season. They need about 1 hour of exercise a day and are prone to ear infections, so check their ears weekly."
+  },
+  {
+    "id": "breed-pug",
+    "topic": "breed care",
+    "species": ["dog"],
+    "keywords": ["pug", "brachycephalic", "wrinkles", "heat", "walk", "breathing"],
+    "breed": "pug",
+    "text": "Pugs overheat easily and breathe with difficulty in heat. Keep walks short (15 to 20 minutes) and avoid hot hours. Clean facial wrinkles every few days to prevent skin infections."
+  },
+  {
+    "id": "breed-siamese",
+    "topic": "breed care",
+    "species": ["cat"],
+    "keywords": ["siamese", "play", "social", "dental", "teeth"],
+    "breed": "siamese",
+    "text": "Siamese cats are social and active and need daily interactive play (15 minutes or more). Their short coat needs only weekly brushing. They are prone to dental disease, so plan regular tooth care."
+  },
+  {
+    "id": "care-general-dog",
+    "topic": "general care",
+    "species": ["dog"],
+    "keywords": ["dog", "walk", "exercise", "feeding", "water", "daily"],
+    "text": "Adult dogs generally need two meals a day, constant access to fresh water, and at least 30 minutes of exercise daily."
+  },
+  {
+    "id": "care-general-cat",
+    "topic": "general care",
+    "species": ["cat"],
+    "keywords": ["cat", "feeding", "litter", "water", "play", "daily"],
+    "text": "Adult cats generally need two or more small meals a day, fresh water, a clean litter box, and daily play."
+  }
+]

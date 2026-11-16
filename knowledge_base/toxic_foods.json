@@ -1,0 +1,47 @@
+[
+  {
+    "id": "toxic-grapes",
+    "topic": "toxic food",
+    "species": ["dog", "cat"],
+    "keywords": ["grape", "grapes", "raisin", "raisins", "currant"],
+    "food": ["grape", "raisin", "currant"],
+    "severity": "urgent",
+    "text": "Grapes, raisins and currants can cause sudden kidney failure in dogs and cats. No safe amount is known. Do not feed. Call a vet or poison hotline immediately if eaten."
+  },
+  {
+    "id": "toxic-chocolate",
+    "topic": "toxic food",
+    "species": ["dog", "cat"],
+    "keywords": ["chocolate", "cocoa", "cacao", "brownie"],
+    "food": ["chocolate", "cocoa", "cacao", "brownie"],
+    "severity": "urgent",
+    "text": "Chocolate contains theobromine, which is toxic to dogs and cats. Dark chocolate and baking chocolate are the most dangerous. Do not feed. Contact a vet if eaten."
+  },
+  {
+    "id": "toxic-onion-garlic",
+    "topic": "toxic food",
+    "species": ["dog", "cat"],
+    "keywords": ["onion", "onions", "garlic", "chive", "chives", "leek"],
+    "food": ["onion", "garlic", "chive", "leek"],
+    "severity": "warning",
+    "text": "Onions, garlic, chives and leeks damage red blood cells in dogs and cats, especially cats. Do not feed, including in cooked leftovers."
+  },
+  {
+    "id": "toxic-xylitol",
+    "topic": "toxic food",
+    "species": ["dog", "cat"],
+    "keywords": ["xylitol", "sugar-free", "gum", "peanut butter"],
+    "food": ["xylitol", "sugar-free gum"],
+    "severity": "urgent",
+    "text": "Xylitol, a sweetener found in sugar-free gum and some peanut butters, causes dangerous drops in blood sugar and liver failure in dogs. Check peanut butter labels before using it for treats or pill pockets."
+  },
+  {
+    "id": "toxic-lily",
+    "topic": "toxic plant",
+    "species": ["cat"],
+    "keywords": ["lily", "lilies"],
+    "food": ["lily"],
+    "severity": "urgent",
+    "text": "All parts of true lilies are highly toxic to cats and can cause kidney failure. Keep lilies away from cats entirely."
+  }
+]

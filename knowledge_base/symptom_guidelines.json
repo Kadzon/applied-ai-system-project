@@ -1,0 +1,54 @@
+[
+  {
+    "id": "sym-vomiting",
+    "topic": "symptom triage",
+    "species": ["dog", "cat"],
+    "keywords": ["vomit", "vomiting", "threw", "throw", "sick", "nausea"],
+    "symptom": "vomiting",
+    "monitor_at": 1,
+    "stress_cancel_at": 2,
+    "vet_contact_at": 2,
+    "urgent_at": 4,
+    "stressful_categories": ["grooming", "appointment", "play"],
+    "text": "Vomiting once is usually minor: monitor and offer small amounts of water. Two or more episodes in a day means contact the vet, and postpone stressful activities such as grooming or rough play. Four or more episodes, or vomiting with lethargy or blood, is urgent and needs a vet now."
+  },
+  {
+    "id": "sym-diarrhea",
+    "topic": "symptom triage",
+    "species": ["dog", "cat"],
+    "keywords": ["diarrhea", "diarrhoea", "loose", "stool", "runny"],
+    "symptom": "diarrhea",
+    "monitor_at": 1,
+    "stress_cancel_at": 3,
+    "vet_contact_at": 3,
+    "urgent_at": 6,
+    "stressful_categories": ["grooming", "appointment"],
+    "text": "A single loose stool is usually minor: monitor. Three or more episodes in a day means contact the vet and postpone stressful activities such as grooming. Six or more episodes, or blood in the stool, is urgent."
+  },
+  {
+    "id": "sym-lethargy",
+    "topic": "symptom triage",
+    "species": ["dog", "cat"],
+    "keywords": ["lethargy", "lethargic", "tired", "sluggish", "weak", "listless"],
+    "symptom": "lethargy",
+    "monitor_at": 1,
+    "stress_cancel_at": 1,
+    "vet_contact_at": 2,
+    "urgent_at": 3,
+    "stressful_categories": ["grooming", "appointment", "play"],
+    "text": "Unusual tiredness may mean pain or illness. Reduce activity and postpone grooming or play. If it lasts more than a day, or comes with not eating or other symptoms, contact the vet."
+  },
+  {
+    "id": "sym-not-eating",
+    "topic": "symptom triage",
+    "species": ["dog", "cat"],
+    "keywords": ["appetite", "eating", "refusing", "food", "anorexia", "skipped"],
+    "symptom": "not_eating",
+    "monitor_at": 1,
+    "stress_cancel_at": 2,
+    "vet_contact_at": 2,
+    "urgent_at": 4,
+    "stressful_categories": ["grooming", "appointment"],
+    "text": "Skipping one meal is worth watching. Skipping two or more meals means contact the vet. Cats that stop eating for more than a day can develop serious liver problems, so call the vet sooner for cats."
+  }
+]
